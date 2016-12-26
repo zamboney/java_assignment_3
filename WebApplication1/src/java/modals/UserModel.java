@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author rani
  */
-public class UserModal {
+public class UserModel {
     String _fname;
     String _lname;
     String _email;
@@ -45,7 +45,7 @@ public class UserModal {
         return _id;
     }
 
-    public UserModal(String _fname, String _lname, String _email) {
+    public UserModel(String _fname, String _lname, String _email) {
         this._fname = _fname;
         this._lname = _lname;
         this._email = _email;

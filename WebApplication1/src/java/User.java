@@ -13,7 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import modals.UserModal;
+import modals.UserModel;
 
 /**
  *
@@ -22,7 +22,7 @@ import modals.UserModal;
 @WebServlet(urlPatterns = {"/User"})
 public class User extends HttpServlet {
 
-    public static List<UserModal> users;
+    public static List<UserModel> users;
 
     public User() {
         if (users == null) {
@@ -82,7 +82,7 @@ public class User extends HttpServlet {
                     + "<hr>"
                     + "<div class=\"panel panel-default\">\n"
                     + "  <!-- Default panel contents -->\n"
-                    + "  <div class=\"panel-heading\">Panel heading</div>\n"
+                    + "  <div class=\"panel-heading\">List of users</div>\n"
                     + "\n"
                     + "  <!-- Table -->\n"
                     + "  <table class=\"table\">\n"
@@ -129,7 +129,7 @@ public class User extends HttpServlet {
 
             response.sendError(301);
         } else {
-            this.users.add(new UserModal(fname, lname, email));
+            this.users.add(new UserModel(fname, lname, email));
 
             processRequest(request, response);
         }

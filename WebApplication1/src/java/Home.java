@@ -42,7 +42,7 @@ public class Home extends HttpServlet {
             out.println("<body>");
             out.println("        <ul class='nav nav-tabs'>\n"
                     + "            <li class=\"active\"><a href=\"Home\">Home</a></li>\n"
-                    + "            <li><a href=\"Rent\">Rent</a></li>\n"
+                    + "            <li><a href=\"./Rent\">Rent</a></li>\n"
                     + "            <li><a href=\"User\">User</a></li>\n"
                     + "            <li><a href=\"Book\">Books</a></li>\n"
                     + "\n"

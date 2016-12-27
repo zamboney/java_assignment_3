@@ -1,5 +1,6 @@
 package modals;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /*
@@ -12,7 +13,7 @@ import java.util.Date;
  *
  * @author ritzhaki
  */
-public class BookModel {
+public class BookModel implements Serializable {
     private String _name;
     private String _aName;
     private String _id;

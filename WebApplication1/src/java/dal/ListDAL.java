@@ -32,8 +32,7 @@ public class ListDAL<T> implements List<T> {
     private List<T> list;
 
     public ListDAL(String filePath) {
-        String s = System.getProperty("user.dir");
-        fileName = s + filePath;
+        fileName = filePath;
         synchronized (fileName) {
             try {
                 File file = new File(fileName);
@@ -55,23 +54,22 @@ public class ListDAL<T> implements List<T> {
     }
 
     private boolean SaveData() {
-         synchronized (fileName) {
-         
-        ObjectOutputStream oos;
-        try {
-            FileOutputStream fos = new FileOutputStream(fileName);
-            oos = new ObjectOutputStream(fos);
-            oos.writeObject(this.list);
-            oos.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(ListDAL.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        } catch (IOException ex) {
-            Logger.getLogger(ListDAL.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+        synchronized (fileName) {
+            ObjectOutputStream oos;
+            try {
+                FileOutputStream fos = new FileOutputStream(fileName);
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.list);
+                oos.close();
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ListDAL.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            } catch (IOException ex) {
+                Logger.getLogger(ListDAL.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+            return true;
         }
-        return true;
-         }
     }
 
     @Override
@@ -103,7 +101,7 @@ public class ListDAL<T> implements List<T> {
     public <T> T[] toArray(T[] a) {
         return this.list.toArray(a);
     }
-    
+
     public boolean remove(Object o) {
         return this.list.remove(o) && this.SaveData();
     }

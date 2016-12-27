@@ -18,6 +18,8 @@ import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -36,10 +38,18 @@ import javax.servlet.http.Part;
 @MultipartConfig
 public class Book extends HttpServlet {
 
-    public List<BookModel> Books;
+    private final String bookPath = "book.sh";
+    private List<BookModel> _books;
+
+    private List<BookModel> GetBooks() {
+        if (this._books == null) {
+            this._books = new ListDAL<>(getServletContext().getRealPath(File.separator) + "book.sh");
+        }
+        return this._books;
+    }
 
     public Book() {
-        this.Books = new ListDAL<>("book.sh");
+
     }
 
     /**
@@ -76,14 +86,16 @@ public class Book extends HttpServlet {
 
             return;
         }
-
+        Map<String, List<BookModel>> groupBook
+                = this.GetBooks().stream().collect(Collectors.groupingBy(b -> b.getName() + b.getaName()));
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<link href=\"//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u\" crossorigin=\"anonymous\">");
+            out.println(
+                    "<link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u\" crossorigin=\"anonymous\">\n");
             out.println("<title>Servlet Book</title>");
             out.println("</head>");
             out.println("<body>");
@@ -106,7 +118,10 @@ public class Book extends HttpServlet {
                     + "        <div class=\"col-sm-10\"><input required   class=\"form-control\" type=\"text\" name=\"category\"></div>\n"
                     + "    </div>\n"
                     + "    <div class=\"form-group\"><label for=\"year\" class=\"col-sm-2 control-label\">Year Of Publish</label>\n"
-                    + "        <div class=\"col-sm-10\"><input required  class=\"form-control\"  type=\"text\" name=\"year\"></div>\n"
+                    + "        <div class=\"col-sm-10\"><input pattern=\"[0-9]{4}\" required  class=\"form-control\"  type=\"text\" name=\"year\"></div>\n"
+                    + "    </div>\n"
+                    + "    <div class=\"form-group\"><label for=\"copies\" class=\"col-sm-2 control-label\">Copies</label>\n"
+                    + "        <div class=\"col-sm-2\"><input required  class=\"form-control\"  type=\"number\" value=\"1\" min=\"1\" name=\"copies\"></div>\n"
                     + "    </div>\n"
                     + "\n"
                     + "    <div class=\"form-group\"><label for=\"picture\" class=\"col-sm-2 control-label\">Picture</label>\n"
@@ -123,15 +138,46 @@ public class Book extends HttpServlet {
                     + "  <div class=\"panel-heading\">List of users</div>\n"
                     + "\n"
                     + "  <!-- Table -->\n"
-                    + "  <table class=\"table\">\n"
-                    + "    <tr><th>Book Name</th><th>Arthur Name</th><th>Category</th><th>Year</th><th>Image</th></tr>");
-            this.Books.forEach((b) -> out.println(String.format("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", b.getName(), b.getaName(), b.getCategory(), b.getYear(), "<img style=\"\n"
-                    + "    height: 60px;\n"
-                    + "\" class=\"img-thumbnail\" src='Book?image=" + b.getPicturePath() + "'/>")));
-            out.println("  </table>\n"
+                    + "          <table class=\"table\">\n"
+                    + "            <thead>\n"
+                    + "                <tr>\n"
+                    + "                    <th>Book Name</th><th>Arthur Name</th><th>Category</th><th>Year</th><th>Image</th><th>Copies</th>\n"
+                    + "                </tr>\n"
+                    + "            </thead>\n"
+                    + "            <tbody>");
+            groupBook
+                    .forEach((key, list) -> {
+                        out.println(
+                                "<tr class=\"accordion-toggle\">\n"
+                                + "                    <td data-toggle=\"collapse\" data-target=\"#collapse" + key + "\">" + list.get(0).getName() + "</td>\n"
+                                + "                    <td data-toggle=\"collapse\" data-target=\"#collapse" + key + "\">" + list.get(0).getaName() + "</td>\n"
+                                + "                    <td data-toggle=\"collapse\" data-target=\"#collapse" + key + "\">" + list.get(0).getCategory() + "</td>\n"
+                                + "                    <td data-toggle=\"collapse\" data-target=\"#collapse" + key + "\">" + list.get(0).getYear() + "</td>\n"
+                                + "                    <td data-toggle=\"collapse\" data-target=\"#collapse" + key + "\"><img style=\"height: 60px;\" class=\"img-thumbnail\" src='Book?image=" + list.get(0).getPicturePath() + "'\"/></td>\n"
+                                + "                    <td data-toggle=\"collapse\" data-target=\"#collapse" + key + "\">" + list.size() + "</td>\n"
+                                + "                </tr>"
+                                + "                <tr>\n"
+                                + "                    <td colspan=\"6\">\n"+ "  <!-- Table -->\n"
+                    + "          <table id=\"collapse" + key+"\" class=\"table collapse\">\n"
+                    + "            <thead>\n"
+                    + "                <tr>\n"
+                    + "                    <th>Id</th><th>Rented</th><th>Remove</th>\n"
+                    + "                </tr>\n"
+                    + "            </thead>\n"
+                    + "            <tbody>");
+                        list.forEach((b)->out.println("<tr><td>"+b.getId()+"</td><td></td><td></td></tr>"));
+                         out.println("</tbody></table></td>");
+                    });
+            out.println("  </tbody></table>\n"
                     + "</div>");
 
-            out.println("</div></div></body>");
+            out.println("</div></div>\n"
+                    + "<!-- Le javascript\n"
+                    + "    ================================================== -->\n"
+                    + "    <!-- Placed at the end of the document so the pages load faster -->\n"
+                    + "    <script src=\"http://getbootstrap.com/2.3.2/assets/js/jquery.js\"></script>\n"
+                    + "    <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>\n"
+                    + "</body>");
             out.println("</html>");
         }
     }
@@ -181,12 +227,11 @@ public class Book extends HttpServlet {
         OutputStream outStream = new FileOutputStream(targetFile);
 
         outStream.write(buffer);
-        if (this.Books.add(b)) {
-            response.sendRedirect("Book");
-        } else {
-            response.sendError(404);
-
+        List<BookModel> books = this.GetBooks();
+        for (int i = 0; i < Integer.parseInt(request.getParameter("copies")); i++) {
+            books.add(b);
         }
+        response.sendRedirect("Book");
 
     }
 

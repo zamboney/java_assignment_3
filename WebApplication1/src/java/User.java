@@ -29,14 +29,10 @@ public class User extends HttpServlet {
     public User() {
      
     }
-    private final String userPath = "user.sh";
-    private List<UserModel> _users;
+    public static final String userPath = "user.sh";
 
     private List<UserModel> GeUsers() {
-        if (this._users == null) {
-            this._users = new ListDAL<>(getServletContext().getRealPath(File.separator) + this.userPath);
-        }
-        return this._users;
+        return new ListDAL<>(getServletContext().getRealPath(File.separator) + this.userPath);
     }
 
     /**

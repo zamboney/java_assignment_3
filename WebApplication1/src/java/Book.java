@@ -38,14 +38,14 @@ import javax.servlet.http.Part;
 @MultipartConfig
 public class Book extends HttpServlet {
 
-    private final String bookPath = "book.sh";
+    public static final String bookPath = "book.sh";
+    public static Map<String, List<BookModel>> GroupBook(List<BookModel> books){
+        return books.stream().collect(Collectors.groupingBy(b -> (b.getName() + b.getaName()).replace(' ', '_')));
+    }
     private List<BookModel> _books;
 
     private List<BookModel> GetBooks() {
-        if (this._books == null) {
-            this._books = new ListDAL<>(getServletContext().getRealPath(File.separator) + "book.sh");
-        }
-        return this._books;
+            return new ListDAL<>(getServletContext().getRealPath(File.separator) + bookPath);
     }
 
     public Book() {
@@ -86,8 +86,7 @@ public class Book extends HttpServlet {
 
             return;
         }
-        Map<String, List<BookModel>> groupBook
-                = this.GetBooks().stream().collect(Collectors.groupingBy(b -> (b.getName() + b.getaName()).replace(' ', '_')));
+        Map<String, List<BookModel>> groupBook = Book.GroupBook(this.GetBooks());
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */

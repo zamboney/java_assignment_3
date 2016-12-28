@@ -5,13 +5,14 @@
  */
 package modals;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author rani
  */
-public class UserModel {
+public class UserModel implements Serializable{
     String _fname;
     String _lname;
     String _email;

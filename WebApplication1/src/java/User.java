@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 
+import dal.ListDAL;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import modals.BookModel;
 import modals.UserModel;
 
 /**
@@ -22,12 +25,18 @@ import modals.UserModel;
 @WebServlet(urlPatterns = {"/User"})
 public class User extends HttpServlet {
 
-    public static List<UserModel> users;
 
     public User() {
-        if (users == null) {
-            users = new ArrayList<>();
+     
+    }
+    private final String userPath = "user.sh";
+    private List<UserModel> _users;
+
+    private List<UserModel> GeUsers() {
+        if (this._users == null) {
+            this._users = new ListDAL<>(getServletContext().getRealPath(File.separator) + this.userPath);
         }
+        return this._users;
     }
 
     /**
@@ -63,15 +72,15 @@ public class User extends HttpServlet {
             out.println("<form action=\"User\" method=\"post\" class=\"form-horizontal\">\n"
                     + "    <div class=\"form-group\">\n"
                     + "        <label  class=\"col-sm-2 control-label\" for=\"fname\">First Name</label>\n"
-                    + "        <div class=\"col-sm-10\"><input type=\"text\"  class=\"form-control\" name=\"fname\"></div>\n"
+                    + "        <div class=\"col-sm-10\"><input type=\"text\" required class=\"form-control\" name=\"fname\"></div>\n"
                     + "        </div>\n"
                     + "    <div class=\"form-group\">\n"
                     + "        <label  class=\"col-sm-2 control-label\" for=\"lname\">Last Name</label>\n"
-                    + "        <div class=\"col-sm-10\"><input type=\"text\"  class=\"form-control\" name=\"lname\"></div>\n"
+                    + "        <div class=\"col-sm-10\"><input type=\"text\" required class=\"form-control\" name=\"lname\"></div>\n"
                     + "        </div>\n"
                     + "    <div class=\"form-group\">\n"
                     + "        <label  class=\"col-sm-2 control-label\" for=\"email\">E-Mail</label>\n"
-                    + "        <div class=\"col-sm-10\"><input type=\"text\"  class=\"form-control\" name=\"email\"></div>\n"
+                    + "        <div class=\"col-sm-10\"><input type=\"email\" required class=\"form-control\" name=\"email\"></div>\n"
                     + "    </div>\n"
                     + "    <div class=\"form-group\">\n"
                     + "        <div class=\"col-sm-offset-2 col-sm-10\">\n"
@@ -87,7 +96,7 @@ public class User extends HttpServlet {
                     + "  <!-- Table -->\n"
                     + "  <table class=\"table\">\n"
                     + "    <tr><th>First Name</th><th>Last Name</th><th>Email</th</tr>");
-            this.users.forEach((user)->out.println(String.format("<tr><td>%s</td><td>%s</td><td>%s</td></tr>",user.getFname(),user.getLname(),user.getEmail())));
+            this.GeUsers().forEach((user)->out.println(String.format("<tr><td>%s</td><td>%s</td><td>%s</td></tr>",user.getFname(),user.getLname(),user.getEmail())));
             out.println("  </table>\n"
                     + "</div>");
             out.println("</div></div></body>");
@@ -126,11 +135,9 @@ public class User extends HttpServlet {
                 lname = request.getParameter("lname"),
                 email = request.getParameter("email");
         if (fname == null || lname == null || email == null) {
-
             response.sendError(301);
         } else {
-            this.users.add(new UserModel(fname, lname, email));
-
+            this.GeUsers().add(new UserModel(fname, lname, email));
             processRequest(request, response);
         }
 

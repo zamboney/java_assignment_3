@@ -87,7 +87,7 @@ public class Book extends HttpServlet {
             return;
         }
         Map<String, List<BookModel>> groupBook
-                = this.GetBooks().stream().collect(Collectors.groupingBy(b -> b.getName() + b.getaName()));
+                = this.GetBooks().stream().collect(Collectors.groupingBy(b -> (b.getName() + b.getaName()).replace(' ', '_')));
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
@@ -97,7 +97,8 @@ public class Book extends HttpServlet {
             out.println(
                     "<link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u\" crossorigin=\"anonymous\">\n");
             out.println("<title>Servlet Book</title>");
-            out.println("</head>");
+            out.println("<style>.row.hover:hover{background:#d0d0d0;}</style>"
+                    + "</head>");
             out.println("<body>");
             out.println("        <ul class='nav nav-tabs'>\n"
                     + "            <li ><a href=\"Home\">Home</a></li>\n"
@@ -111,7 +112,7 @@ public class Book extends HttpServlet {
                     + "    <div class=\"form-group\"><label for=\"name\" class=\"col-sm-2 control-label\">Book Name</label>\n"
                     + "        <div class=\"col-sm-10\"><input required  class=\"form-control\"  type=\"text\" name=\"name\"></div>\n"
                     + "    </div>\n"
-                    + "    <div class=\"form-group\"><label for=\"aname\" class=\"col-sm-2 control-label\">Arthur Name</label>\n"
+                    + "    <div class=\"form-group\"><label for=\"aname\" class=\"col-sm-2 control-label\">Author Name</label>\n"
                     + "        <div class=\"col-sm-10\"><input required  class=\"form-control\"  type=\"text\" name=\"aname\"></div>\n"
                     + "    </div>\n"
                     + "    <div class=\"form-group\"><label for=\"category\" class=\"col-sm-2 control-label\">Category</label>\n"
@@ -122,6 +123,15 @@ public class Book extends HttpServlet {
                     + "    </div>\n"
                     + "    <div class=\"form-group\"><label for=\"copies\" class=\"col-sm-2 control-label\">Copies</label>\n"
                     + "        <div class=\"col-sm-2\"><input required  class=\"form-control\"  type=\"number\" value=\"1\" min=\"1\" name=\"copies\"></div>\n"
+                    + "    </div>\n"
+                    + "    <div class=\"form-group\"><label for=\"condition\" class=\"col-sm-2 control-label\">Condition</label>\n"
+                    + "        <div class=\"col-sm-2\">"
+                    + "<select required name=\"condition\"  class=\"form-control\">\n"
+                    + "  <option value='Good'>Good</option>\n"
+                    + "  <option value='Bad'>Bad</option>\n"
+                    + "  <option value='UnUsed'>UnUsed</option>\n"
+                    + "</select>"
+                    + "        </div>\n"
                     + "    </div>\n"
                     + "\n"
                     + "    <div class=\"form-group\"><label for=\"picture\" class=\"col-sm-2 control-label\">Picture</label>\n"
@@ -157,24 +167,37 @@ public class Book extends HttpServlet {
                                 + "                    <td data-toggle=\"collapse\" data-target=\"#collapse" + key + "\">" + list.size() + "</td>\n"
                                 + "                </tr>"
                                 + "                <tr>\n"
-                                + "                    <td colspan=\"6\">\n"+ "  <!-- Table -->\n"
-                    + "          <table id=\"collapse" + key+"\" class=\"table collapse\">\n"
-                    + "            <thead>\n"
-                    + "                <tr>\n"
-                    + "                    <th>Id</th><th>Rented</th><th>Remove</th>\n"
-                    + "                </tr>\n"
-                    + "            </thead>\n"
-                    + "            <tbody>");
-                        list.forEach((b)->out.println("<tr><td>"+b.getId()+"</td><td></td><td></td></tr>"));
-                         out.println("</tbody></table></td>");
+                                + "                    <td colspan=\"6\">\n" + "  <!-- Table -->\n"
+                                + "          <div id=\"collapse" + key + "\" class=\"table collapse\">\n"
+                                + "            <div class=\"row\">\n"
+                                + "                    <div class=\"col col-xs-7\">Id</div>"
+                                + "                    <div class=\"col col-xs-3\">Condition</div>"
+                                + "                    <div class=\"col col-xs-1\">Rented</div>"
+                                + "                    <div class=\"col col-xs-1\">Remove</div>\n"
+                                + "            </div>"
+                                + "<hr/>"
+                                + "            ");
+                        list.forEach((b) -> out.println(""
+                                + "<div class=\"row hover\"><div class=\"col col-xs-7\">" + b.getId() + "</div>"
+                                + "<div class=\"col col-xs-3\">" + b.getCondition().name() + "</div>"
+                                + "<div class=\"col col-xs-1 text-center\">" + (b.isRented() ? "<span class=\"glyphicon-class\">glyphicon glyphicon-ok</span>" : "") + "</div>"
+                                + "<div class=\"col col-xs-1 text-center\">" + (b.isRented() ? "" : "<form action=\"Book\" method=\"post\"><button type=\"submit\" class=\"btn btn-default\"><input type='hidden' name='removeID' value='" + b.getId() + "'/><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span></button></form>") + "</div></div>"));
                     });
-            out.println("  </tbody></table>\n"
+            out.println("  </tbody></div>\n"
                     + "</div>");
 
             out.println("</div></div>\n"
-                    + "<!-- Le javascript\n"
-                    + "    ================================================== -->\n"
-                    + "    <!-- Placed at the end of the document so the pages load faster -->\n"
+                    + "<script>\n"
+                    + "	window.addEventListener(\"keypress\", function(e){\n"
+                    + "		if(e.ctrlKey && e.code === 'KeyQ' ){\n"
+                    + "			document.querySelector('[name=\"name\"]').value = 'Book1'\n"
+                    + "			document.querySelector('[name=\"aname\"]').value = 'Author 1'\n"
+                    + "			document.querySelector('[name=\"category\"]').value = 'Action'\n"
+                    + "			document.querySelector('[name=\"year\"]').value = '1988'\n"
+                    + "		}\n"
+                    + "			\n"
+                    + "	}, false);\n"
+                    + "</script>"
                     + "    <script src=\"http://getbootstrap.com/2.3.2/assets/js/jquery.js\"></script>\n"
                     + "    <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>\n"
                     + "</body>");
@@ -208,12 +231,20 @@ public class Book extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        if(request.getParameter("removeID") != null){
+            String id = request.getParameter("removeID");
+            BookModel removeMe = this.GetBooks().stream().filter((b)->(b.getId() == null ? id == null : b.getId().equals(id))).findFirst().get();
+            this.GetBooks().remove(removeMe);
+            
+            response.sendRedirect("Book");
+            return;
+        }
         BookModel b = new BookModel(
                 request.getParameter("name"),
                 request.getParameter("aname"),
                 request.getParameter("category"),
-                request.getParameter("year"));
+                request.getParameter("year"),
+                BookModel.BookCondition.valueOf(request.getParameter("condition")));
 
         Part filePart = request.getPart("picture"); // Retrieves <input type="file" name="file">
         String fileName = b.getId() + ".jpg";
@@ -228,8 +259,9 @@ public class Book extends HttpServlet {
 
         outStream.write(buffer);
         List<BookModel> books = this.GetBooks();
-        for (int i = 0; i < Integer.parseInt(request.getParameter("copies")); i++) {
-            books.add(b);
+        books.add(b);
+        for (int i = 1; i < Integer.parseInt(request.getParameter("copies")); i++) {
+            books.add(b.clone());
         }
         response.sendRedirect("Book");
 

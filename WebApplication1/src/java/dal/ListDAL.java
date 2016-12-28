@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 public class ListDAL<T> implements List<T> {
 
     private String fileName;
-    private List<T> list;
+    private List<T> list = new ArrayList<>();
 
     public ListDAL(String filePath) {
         fileName = filePath;

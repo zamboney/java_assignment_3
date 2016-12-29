@@ -5,6 +5,7 @@
  */
 package modals;
 
+import dal.GetId;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -12,18 +13,37 @@ import java.util.Date;
  *
  * @author ritzhaki
  */
-public class RentModel implements Serializable {
+public class RentModel implements Serializable ,GetId {
 
     private String _bookId;
     private String _userId;
     private int _days;
-    private Date _startTime;
+    private Date _startTime;    
+    private Date _endTime;
+
+    public Date getEndTime() {
+        return _endTime;
+    }
+
+    public void setEndTime(Date _endTime) {
+        this._endTime = _endTime;
+    }
+    private String _id;
+
+    public String getId() {
+        return _id;
+    }
+
+    public void setId(String _id) {
+        this._id = _id;
+    }
 
     public RentModel(String _bookId, String _userId, int _days) {
         this._bookId = _bookId;
         this._userId = _userId;
         this._days = _days;
         this._startTime = new Date();
+        this._id = this._bookId+ "_" +this._userId + "_" + this._startTime.getTime();
     }
 
     public String getBookId() {

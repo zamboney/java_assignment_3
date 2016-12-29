@@ -3,6 +3,7 @@ package modals;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
+import dal.GetId;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,7 +14,7 @@ import java.util.UUID;
  *
  * @author ritzhaki
  */
-public class BookModel implements Serializable, Cloneable {
+public class BookModel implements Serializable, Cloneable, GetId {
 
     private String _name;
     private String _aName;

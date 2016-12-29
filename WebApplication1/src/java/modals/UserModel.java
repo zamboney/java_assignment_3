@@ -5,6 +5,7 @@
  */
 package modals;
 
+import dal.GetId;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -12,11 +13,20 @@ import java.util.Date;
  *
  * @author rani
  */
-public class UserModel implements Serializable{
+public class UserModel implements Serializable, GetId{
     String _fname;
     String _lname;
     String _email;
     String _id;
+    int _dayLete; 
+
+    public int getDayLete() {
+        return _dayLete;
+    }
+
+    public void setDayLete(int _dayLete) {
+        this._dayLete = _dayLete;
+    }
 
     public String getFname() {
         return _fname;
@@ -50,7 +60,7 @@ public class UserModel implements Serializable{
         this._fname = _fname;
         this._lname = _lname;
         this._email = _email;
-        this._id = this._fname + this._email + new Date().toString();   
+        this._id = this._fname + this._email + new Date().getTime();   
     }
 
     

@@ -31,6 +31,7 @@ public class User extends HttpServlet {
     }
     public static final String userPath = "user.sh";
 
+    public static final int lateDays = 10;
     private List<UserModel> GeUsers() {
         return new ListDAL<>(getServletContext().getRealPath(File.separator) + this.userPath);
     }
@@ -64,7 +65,9 @@ public class User extends HttpServlet {
                     + "\n"
                     + "        </ul>\n"
                     + "");
-            out.println("<div class=\"jumbotron\"><div class=\"container\"><h2>Add User</h2>");
+            out.println("<div class=\"jumbotron\">"
+                    + "<div class=\"container\"><h2>Add User</h2>"
+                    + "<h5>User will block from renting when his total late days are more then "+ User.lateDays +"</h5>");
             out.println("<form action=\"User\" method=\"post\" class=\"form-horizontal\">\n"
                     + "    <div class=\"form-group\">\n"
                     + "        <label  class=\"col-sm-2 control-label\" for=\"fname\">First Name</label>\n"
@@ -91,8 +94,12 @@ public class User extends HttpServlet {
                     + "\n"
                     + "  <!-- Table -->\n"
                     + "  <table class=\"table\">\n"
-                    + "    <tr><th>First Name</th><th>Last Name</th><th>Email</th</tr>");
-            this.GeUsers().forEach((user)->out.println(String.format("<tr><td>%s</td><td>%s</td><td>%s</td></tr>",user.getFname(),user.getLname(),user.getEmail())));
+                    + "    <tr><th>First Name</th><th>Last Name</th><th>Email</th><th>Blocked</th></tr>");
+            this.GeUsers().forEach((user)->out.println(String.format("<tr><td>%s</td><td>%s</td><td>%s</td><td></td>%s</tr>",
+                    user.getFname(),
+                    user.getLname(),
+                    user.getEmail(),
+                    user.getDayLete() > User.lateDays ? "<span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span>": "")));
             out.println("  </table>\n"
                     + "</div>");
             out.println("</div></div></body>");

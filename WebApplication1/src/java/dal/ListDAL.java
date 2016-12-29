@@ -19,14 +19,18 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+
 
 /**
  *
  * @author ritzhaki
  */
-public class ListDAL<T> implements List<T> {
+public class ListDAL<T extends GetId> implements List<T> {
 
     private String fileName;
     private List<T> list = new ArrayList<>();
@@ -184,6 +188,14 @@ public class ListDAL<T> implements List<T> {
     @Override
     public boolean add(T e) {
         return this.list.add(e) && this.SaveData();
+    }
+    
+    public boolean update (T e){
+        Map<String,T> hash = this.list.stream().collect(Collectors.toMap(T::getId, (t)->t));
+        hash.put(e.getId(), e);
+        this.list = hash.values().stream().collect(Collectors.toList());
+        this.SaveData();
+        return true;
     }
 
 }
